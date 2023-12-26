@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import math
 import sys
 from flask import Flask, request, url_for, redirect, jsonify
-import flask_cors
+from flask_cors import CORS
 from flask_pydantic import validate
 import psycopg2
 from pydantic import BaseModel
@@ -16,7 +16,7 @@ from pydantic import BaseModel
 # https://pypi.org/project/Flask-Pydantic/
 
 app = Flask(__name__)
-CORS = flask_cors.CORS()
+CORS(app, resources={r"/*": {'origins': "*"}})
 
 pg_connection_dict = {
     'dbname': 'PingPongDB',
@@ -120,7 +120,7 @@ def calculate_new_elo(player1_elo: int, player2_elo: int, player1_win: bool) -> 
 @app.route('/ping', methods=['GET'])
 def test_connection():
     """Tests the API"""
-    return jsonify("hello!")
+    return jsonify("hello!"), 201
 
 
 @app.route('/update', methods=['POST'])
