@@ -1,5 +1,6 @@
 """Test cases for backend functions"""
 
+# import pytest
 import unittest
 import backend as be
 
@@ -14,3 +15,10 @@ class TestCases(unittest.TestCase):
         out_elo_1, out_elo_2 = be.calculate_new_elo(elo_1, elo_2, player1_win=True)
         self.assertEqual(expected_1, out_elo_1, "Player 1 elo did not properly update")
         self.assertEqual(expected_2, out_elo_2, "Player 2 elo did not properly update")
+
+# @pytest.fixure()
+# def database(postgresql):
+#     cur = postgresql.cursor()
+#     cur.execute("Something")
+#     postgresql.commit()
+#     cur.close()
