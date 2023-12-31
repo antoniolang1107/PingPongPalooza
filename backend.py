@@ -143,6 +143,7 @@ def record_new_singles_match(new_match: SinglesMatch) -> bool:
 # @validate
 def add_new_player() -> None:
     """Adds new player to data storage"""
+    # TODO add additional fields to DB for player
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
     player_info = request.get_json()
@@ -161,11 +162,22 @@ def get_global_elo() -> dict:
     """Gets ELO for all players"""
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    db_cursor.execute('SELECT (first_name, last_name, elo) from players;')
+    db_cursor.execute('SELECT * from players;')
+    columns = ['first_name', 'last_name', 'elo']
+    query_command = f'SELECT {", ".join(columns)} from players;'
+    db_cursor.execute(query_command)
+    # db_cursor.execute('SELECT first_name, last_name, elo from players;')
     query_result = db_cursor.fetchall()
-    # sort here or on front end?
     print(query_result)
-    return jsonify(query_result), 200
+    for row in query_result:
+        print("\n-- new player --")
+        for index, column in enumerate(columns):
+            print(f"{column}: {row[index]}")
+    # columns.insert(0, "index")
+    # default sort by elo
+    # query_result.sort(lambda "on elo value")
+    descriptive_dict = {'headers': columns, 'data': query_result}
+    return jsonify(descriptive_dict), 200
 
 def create_tournament() -> None:
     """temp; will be front-end"""
@@ -183,7 +195,7 @@ def store_tournament() -> None:
 
 @app.route('/backend-test', methods=['GET'])
 def testing_route():
-    """Used for testing. Not live"""
+    """Used for testing. Not for live"""
     return 201
 
 # db_cursor.close()
