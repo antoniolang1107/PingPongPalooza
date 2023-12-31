@@ -120,35 +120,41 @@ def calculate_new_elo(player1_elo: int, player2_elo: int, player1_win: bool) -> 
 @app.route('/ping', methods=['GET'])
 def test_connection():
     """Tests the API"""
-    return jsonify("hello!"), 201
+    return jsonify("hello!"), 200
 
 
 @app.route('/update', methods=['POST'])
 # @db_connection
-
 def record_new_singles_match(new_match: SinglesMatch) -> bool:
     """Writes match result to data storage"""
+    # will likely replace postgres command values with post_data
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    post_data = request.form
+    post_data = request.get_json()
     db_cursor.execute('INSERT INTO matches (pid1, pid2, p1_win, first_to, p1_score,'
                       'p2_score) VALUES (%s, %s, %s, %s, %s, %s, %s);',
                       (new_match.player_1_id, new_match.player_2_id, new_match.player_1_win,
                        new_match.first_to, new_match.player_1_score, new_match.player_2_score))
     update_elo(new_match)
+    # db_cursor.commit()
+    conn.close()
 
 @app.route('/new-player', methods=['POST'])
-@validate
+# @validate
 def add_new_player() -> None:
     """Adds new player to data storage"""
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    player_info = request.form.to_dict()
-
+    player_info = request.get_json()
+    # player_info = request.form.to_dict() # potentially isn't sent as form
+    print(player_info)
+    if "" in player_info.values() or player_info == {}:
+        return jsonify("Missing data"), 400
     db_cursor.execute('INSERT INTO players (first_name, last_name) VALUES (%s, %s);',
                       (player_info['first_name'], player_info['last_name']))
-    conn.commit()
+    # conn.commit()
     conn.close()
+    return jsonify('okay'), 201
 
 @app.route('/get-elo', methods=['GET'])
 def get_global_elo() -> dict:
@@ -156,9 +162,10 @@ def get_global_elo() -> dict:
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
     db_cursor.execute('SELECT (first_name, last_name, elo) from players;')
-    query_result = db_cursor.results.all()
+    query_result = db_cursor.fetchall()
     # sort here or on front end?
-    return jsonify(query_result), 201
+    print(query_result)
+    return jsonify(query_result), 200
 
 def create_tournament() -> None:
     """temp; will be front-end"""
