@@ -29,6 +29,8 @@ pg_connection_dict = {
 # TODO write and test DB interactions
 # TODO solidify DB schema
 # TODO add live scoring feature
+# TODO add timestamp to match add and player creation
+# IDEA go "smash route" and forego security for now
 
 # conn = psycopg2.connect
 # db_cursor = None
@@ -103,7 +105,7 @@ def update_elo(match: SinglesMatch) -> None:
                       (p1_new_elo, match.player_1_id))
     db_cursor.execute('UPDATE players SET elo = %s WHERE player_id = %s;',
                       (p2_new_elo, match.player_2_id))
-    conn.commit()
+    conn.commit() # ?- remove from here to make atomic on match write?
     conn.close()
 
 def calculate_new_elo(player1_elo: int, player2_elo: int, player1_win: bool) -> tuple:
@@ -138,6 +140,19 @@ def record_new_singles_match(new_match: SinglesMatch) -> bool:
     update_elo(new_match)
     # db_cursor.commit()
     conn.close()
+
+@app.route('/record-match/get-pseudonyms')
+def get_slapper_names():
+    """Gets list of competitor pseudonyms"""
+    conn = psycopg2.connect(**pg_connection_dict)
+    db_cursor = conn.cursor()
+    # db_cursor.execute("SELECT pseudonym FROM players;") # acutal query; not yet supported in DB
+    db_cursor.execute("SELECT first_name FROM players;")
+    names = db_cursor.fetchall()
+    # db_cursor.commit()
+    conn.close()
+    print(names)
+    return jsonify(names), 200
 
 @app.route('/new-player', methods=['POST'])
 # @validate
