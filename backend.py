@@ -127,19 +127,22 @@ def test_connection():
 
 @app.route('/update', methods=['POST'])
 # @db_connection
-def record_new_singles_match(new_match: SinglesMatch) -> bool:
+def record_new_singles_match() -> bool:
+# def record_new_singles_match(new_match: SinglesMatch) -> bool:
     """Writes match result to data storage"""
     # will likely replace postgres command values with post_data
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
     post_data = request.get_json()
-    db_cursor.execute('INSERT INTO matches (pid1, pid2, p1_win, first_to, p1_score,'
-                      'p2_score) VALUES (%s, %s, %s, %s, %s, %s, %s);',
-                      (new_match.player_1_id, new_match.player_2_id, new_match.player_1_win,
-                       new_match.first_to, new_match.player_1_score, new_match.player_2_score))
-    update_elo(new_match)
+    # print(post_data) # successfully posts to backend
+    # db_cursor.execute('INSERT INTO matches (pid1, pid2, p1_win, first_to, p1_score,'
+    #                   'p2_score) VALUES (%s, %s, %s, %s, %s, %s, %s);',
+    #                   (new_match.player_1_id, new_match.player_2_id, new_match.player_1_win,
+    #                    new_match.first_to, new_match.player_1_score, new_match.player_2_score))
+    # update_elo(new_match)
     # db_cursor.commit()
     conn.close()
+    return jsonify("test"), 200
 
 @app.route('/record-match/get-pseudonyms')
 def get_slapper_names():

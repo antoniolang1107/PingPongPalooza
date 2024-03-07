@@ -35,7 +35,11 @@ async function submit() {
     method: 'post',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({
-      "competitor_1": "temp"
+      "competitor_1": "temp",
+      "competitor_2": "temp",
+      "win_val": 21,
+      "score_1": 21,
+      "score_2": 19,
     })
   });
 }
