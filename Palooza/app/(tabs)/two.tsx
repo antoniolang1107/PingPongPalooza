@@ -19,8 +19,6 @@ async function mytest() {
   console.log("in ping")
   const myTemp = await api('http://127.0.0.1:5000/ping')
   console.log(myTemp)
-  // myTemp.then(() => console.log(myTemp))
-  // fetch('http://127.0.0.1:5000/ping').then(console.log("hi"))
 }
 
 async function api<T>(url: string): Promise<T> {

@@ -1,14 +1,30 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '../../components/EditScreenInfo';
+import { Button, Pressable, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
 import { Text, View } from '../../components/Themed';
 
-export default function TabOneScreen() {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
+      <Text style={styles.title}>Ping Pong Palooza</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <p>Add Picture</p>
+      <Link href={'/(tabs)/temp_record_match'} asChild>
+        <Pressable>
+          <button>Log Match</button>
+        </Pressable>
+      </Link>
+      <br/>
+      <Link href={'/(tabs)/temp_leaderboard'} asChild>
+        <Pressable>
+          <button>View Rankings</button>
+        </Pressable>
+      </Link>
+      <br/>
+      <Link href={'/(tabs)/temp_register'} asChild>
+        <Pressable>
+          <button>New Player</button>
+        </Pressable>
+      </Link>
     </View>
   );
 }
