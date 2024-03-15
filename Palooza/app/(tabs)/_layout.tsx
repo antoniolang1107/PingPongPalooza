@@ -51,21 +51,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="temp_register"
+        name="register"
         options={{
           title: 'New Player',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="temp_leaderboard"
+        name="leaderboard"
         options={{
           title: 'Rankings',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="temp_record_match"
+        name="record_match"
         options={{
           title: 'Add Match',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
