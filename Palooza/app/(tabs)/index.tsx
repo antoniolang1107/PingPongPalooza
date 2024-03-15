@@ -8,19 +8,19 @@ export default function HomeScreen() {
       <Text style={styles.title}>Ping Pong Palooza</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <p>Add Picture</p>
-      <Link href={'/(tabs)/temp_record_match'} asChild>
+      <Link href={'/(tabs)/record_match'} asChild>
         <Pressable>
           <button>Log Match</button>
         </Pressable>
       </Link>
       <br/>
-      <Link href={'/(tabs)/temp_leaderboard'} asChild>
+      <Link href={'/(tabs)/leaderboard'} asChild>
         <Pressable>
           <button>View Rankings</button>
         </Pressable>
       </Link>
       <br/>
-      <Link href={'/(tabs)/temp_register'} asChild>
+      <Link href={'/(tabs)/register'} asChild>
         <Pressable>
           <button>New Player</button>
         </Pressable>

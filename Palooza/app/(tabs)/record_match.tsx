@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import { ExampleDropdown } from '../../components/Example_Dropdown';
 
 export default function RecordMatch() {
   return (
@@ -11,7 +10,7 @@ export default function RecordMatch() {
       {/* use radio button for win-con value */}
       {/* ensure competitor 1 != competitor 2 */}
       {/* check for valid score */}
-      <ExampleDropdown></ExampleDropdown>
+      {/* the dropdown is a non-essential feature; make later */}
       <button onClick={getNames}>Get Names</button>
       <input id='competitor 1' placeholder='competitor 1'></input>
       <input id='competitor 2' placeholder='competitor 2'></input>
