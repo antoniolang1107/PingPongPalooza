@@ -1,4 +1,4 @@
-import { Button, StyleSheet, View, Text, TextInput } from 'react-native';
+import { Button, StyleSheet, View, Text, TextInput, Modal, Pressable } from 'react-native';
 import { useState } from 'react';
 // import { Text, View } from '../../components/Themed';
 
@@ -23,6 +23,7 @@ export default function RecordMatch() {
   const [win_val, setWinVal] = useState("");
   const [score1, setScore1] = useState("");
   const [score2, setScore2] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -34,6 +35,21 @@ export default function RecordMatch() {
       {/* ensure competitor 1 != competitor 2 */}
       {/* check for valid score */}
       {/* the dropdown is a non-essential feature; make later */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {setModalVisible(!modalVisible)}}
+      >
+        {/* this modal is a filler for submit feeback */}
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Pressable onPress={() => setModalVisible(!modalVisible)}>
+              <Text>Some user feedback!</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <Button onPress={getNames} title='Get Names'/>
       <TextInput
         style={styles.input}
@@ -134,5 +150,26 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 5,
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
 });
