@@ -92,17 +92,18 @@ def update_elo(match: SinglesMatch) -> None:
     """Updates the elo rating for both players"""
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    p1_elo = db_cursor.execute('SELECT * FROM players WHERE player_id = %s;',
-                               match.player_1_id)
-    p2_elo = db_cursor.execute('SELECT * FROM players WHERE player_id = %s;',
-              match.player_2_id)
-
+    p1_elo = db_cursor.execute('SELECT elo FROM players WHERE id = %s;',
+                               (match.player_1_id,))
+    p1_elo = db_cursor.fetchall()[0][0]
+    db_cursor.execute('SELECT elo FROM players WHERE id = %s;',
+              (match.player_2_id,))
+    p2_elo = db_cursor.fetchall()[0][0]
     p1_new_elo, p2_new_elo = calculate_new_elo(p1_elo, p2_elo, match.player_1_win)
 
-    db_cursor.execute('UPDATE players SET elo = %s WHERE player_id = %s;',
-                      (p1_new_elo, match.player_1_id))
-    db_cursor.execute('UPDATE players SET elo = %s WHERE player_id = %s;',
-                      (p2_new_elo, match.player_2_id))
+    db_cursor.execute('UPDATE players SET elo = %s WHERE id = %s;',
+                      (p1_new_elo, match.player_1_id,))
+    db_cursor.execute('UPDATE players SET elo = %s WHERE id = %s;',
+                      (p2_new_elo, match.player_2_id,))
     conn.commit() # ?- remove from here to make atomic on match write?
     conn.close()
 
@@ -126,22 +127,30 @@ def test_connection():
 @app.route('/update', methods=['POST'])
 # @db_connection
 def record_new_singles_match() -> bool:
-# def record_new_singles_match(new_match: SinglesMatch) -> bool:
+# def record_new_singles_match(temp_match: SinglesMatch) -> bool:
     """Writes match result to data storage"""
     # will likely replace postgres command values with post_data
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
     post_data = request.get_json()
-    # print(post_data) # successfully posts to backend
-    # db_cursor.execute('INSERT INTO matches (pid1, pid2, p1_win, first_to, p1_score,'
-    #                   'p2_score) VALUES (%s, %s, %s, %s, %s, %s, %s);',
-    #                   (new_match.player_1_id, new_match.player_2_id, new_match.player_1_win,
-    #                    new_match.first_to, new_match.player_1_score, new_match.player_2_score))
-    # update_elo(new_match)
-    # db_cursor.commit()
-    print(post_data)
+    # TODO get id by matching player name
+    # TODO determine winner by passing score
+    temp_match = SinglesMatch(
+        player_1_id=1,
+        player_2_id=2,
+        first_to=post_data['win_val'],
+        player_1_win=True,
+        player_1_score=post_data['score_1'],
+        player_2_score=post_data['score_2']
+    )
+    db_cursor.execute('INSERT INTO matches (pid1, pid2, p1_win, first_to, p1_score,'
+                      'p2_score) VALUES (%s, %s, %s, %s, %s, %s);',
+                      (temp_match.player_1_id, temp_match.player_2_id, temp_match.player_1_win,
+                       temp_match.first_to, temp_match.player_1_score, temp_match.player_2_score,))
+    update_elo(temp_match)
+    conn.commit()
     conn.close()
-    return jsonify("test"), 200
+    return jsonify("test"), 201
 
 @app.route('/record-match/get-pseudonyms')
 def get_slapper_names():
