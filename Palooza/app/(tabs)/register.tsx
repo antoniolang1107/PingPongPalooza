@@ -26,10 +26,10 @@ export default function Register() {
       <Text style={styles.title}>Register Tab</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <button onClick={mytest}>hello</button>
-      <input id='firstName' placeholder='First Name'></input>
-      <input id='lastName' placeholder='Last Name'></input>
+      {/* <input id='firstName' placeholder='First Name'></input>
+      <input id='lastName' placeholder='Last Name'></input> */}
       <input id='pseudonym' placeholder='Competitor Name'></input>
-      <input id='pin' placeholder='PIN'></input>
+      {/* <input id='pin' placeholder='PIN'></input> */}
       <button onClick={submit}>Submit Details</button>
       {/* <Form></Form> */}
     </View>
@@ -41,19 +41,19 @@ export default function Register() {
 // };
 
 async function submit() {
-  const firstName = document.getElementById("firstName") as HTMLInputElement;
-  const lastName = document.getElementById("lastName") as HTMLInputElement;
+  // const firstName = document.getElementById("firstName") as HTMLInputElement;
+  // const lastName = document.getElementById("lastName") as HTMLInputElement;
   const pseudonym = document.getElementById("pseudonym") as HTMLInputElement;
-  const pin = document.getElementById("pin") as HTMLInputElement;
+  // const pin = document.getElementById("pin") as HTMLInputElement;
   // encrypt the pin here
   fetch('http://127.0.0.1:5000/new-player', {
     method: 'post',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({
-      "first_name": firstName.value,
-      "last_name": lastName.value,
-      "pseudonym": pseudonym.value,
-      "pin": pin.value
+      // "first_name": firstName.value,
+      // "last_name": lastName.value,
+      "competitor_name": pseudonym.value,
+      // "pin": pin.value
     })
   });
 }

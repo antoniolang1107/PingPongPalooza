@@ -45,22 +45,21 @@ pg_connection_dict = {
 #                     password='filler')
 # db_cursor = db_connection.cursor()
 
-@dataclass
-class Player:
+class Player(BaseModel):
     """Encapsulates Player data"""
     player_id: int
-    first_name: str
-    last_name: str
+    competitor_name: str
+    # first_name: str
+    # last_name: str
     elo: int
 
-class PlayerBodyModel(BaseModel):
+class PlayerPostModel(BaseModel):
     """New Player request model"""
-    first_name: str
-    last_name: str
+    # first_name: str
+    # last_name: str
     stage_name: str
 
-@dataclass
-class SinglesMatch:
+class SinglesMatch(BaseModel):
     """Encapsulates SinglesMatch data"""
     player_1_id: int
     player_2_id: int
@@ -71,12 +70,11 @@ class SinglesMatch:
     match_id: int = -1
     tournament_id: int = -1
 
-class SinglesMatchBodyModel(BaseModel):
+class SinglesMatchPostModel(BaseModel):
     """New match data"""
     player_1: str
     player_2: str
     first_to: int
-
 
 K_VALUE = 32
 
@@ -141,6 +139,7 @@ def record_new_singles_match() -> bool:
     #                    new_match.first_to, new_match.player_1_score, new_match.player_2_score))
     # update_elo(new_match)
     # db_cursor.commit()
+    print(post_data)
     conn.close()
     return jsonify("test"), 200
 
@@ -149,10 +148,8 @@ def get_slapper_names():
     """Gets list of competitor pseudonyms"""
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    # db_cursor.execute("SELECT pseudonym FROM players;") # acutal query; not yet supported in DB
-    db_cursor.execute("SELECT first_name FROM players;")
+    db_cursor.execute("SELECT competitor_name FROM players;")
     names = db_cursor.fetchall()
-    # db_cursor.commit()
     conn.close()
     print(names)
     return jsonify(names), 200
@@ -169,9 +166,14 @@ def add_new_player() -> None:
     print(player_info)
     if "" in player_info.values() or player_info == {}:
         return jsonify("Missing data"), 400
-    db_cursor.execute('INSERT INTO players (first_name, last_name) VALUES (%s, %s);',
-                      (player_info['first_name'], player_info['last_name']))
-    # conn.commit()
+    # db_cursor.execute('INSERT INTO players (first_name, last_name) VALUES (%s, %s);',
+    #                   (player_info['first_name'], player_info['last_name']))
+    try:
+        db_cursor.execute('INSERT INTO players (competitor_name) VALUES (%s);',
+                        (player_info['competitor_name'],))
+    except psycopg2.errors.UniqueViolation:
+        return jsonify("Name already exists"), 400
+    conn.commit()
     conn.close()
     return jsonify('okay'), 201
 
@@ -181,14 +183,14 @@ def get_global_elo() -> dict:
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
     db_cursor.execute('SELECT * from players;')
-    columns = ['first_name', 'last_name', 'elo']
+    columns = ['competitor_name', 'elo']
     query_command = f'SELECT {", ".join(columns)} from players;'
     db_cursor.execute(query_command)
     # db_cursor.execute('SELECT first_name, last_name, elo from players;')
     query_result = db_cursor.fetchall()
     print(query_result)
     for row in query_result:
-        print("\n-- new player --")
+        print("\n-- player --")
         for index, column in enumerate(columns):
             print(f"{column}: {row[index]}")
     # columns.insert(0, "index")
@@ -208,6 +210,8 @@ def create_tournament() -> None:
 
 def store_tournament() -> None:
     """Writes tournament to database"""
+    conn = psycopg2.connect(**pg_connection_dict)
+    db_cursor = conn.cursor()
     db_cursor.execute('INSERT INTO tournaments () VALUES ();',
                       ())
 
