@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
+import { DataTable } from 'react-native-paper';
 
 export default function LeaderboardScreen() {
   return (
@@ -9,6 +10,22 @@ export default function LeaderboardScreen() {
       <button onClick={mytest}>hello</button>
       <button onClick={getStats}>get elo</button>
       {/* table here: f_name, l_name, elo, wins, losses */}
+      <DataTable>
+        <DataTable.Header>
+          <DataTable.Title>Name</DataTable.Title>
+          <DataTable.Title numeric>Elo</DataTable.Title>
+        </DataTable.Header>
+
+        <DataTable.Row>
+          <DataTable.Cell>Test</DataTable.Cell>
+          <DataTable.Cell numeric>1337</DataTable.Cell>
+        </DataTable.Row>
+        
+        <DataTable.Row>
+          <DataTable.Cell>Test2</DataTable.Cell>
+          <DataTable.Cell numeric>420</DataTable.Cell>
+        </DataTable.Row>
+      </DataTable>
     </View>
   );
 }
