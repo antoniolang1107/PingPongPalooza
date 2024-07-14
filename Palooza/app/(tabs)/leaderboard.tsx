@@ -1,53 +1,41 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import { DataTable } from 'react-native-paper';
+import LeaderboardComponent, { LeaderboardSchema }  from '../../components/LeaderboardComponent'
+import React, { useEffect, useState } from 'react';
+
+interface LeaderboardData {
+  header: Array<string>,
+  data: Array<LeaderboardSchema>,
+}
 
 export default function LeaderboardScreen() {
+  const [slapperInfo, setSlapperInfo] = useState(Array<LeaderboardSchema>);
+  useEffect(() => {
+    getStats()
+    .then(data =>
+      setSlapperInfo(data)
+    );
+  }, [])
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Leaderboard</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <button onClick={mytest}>hello</button>
-      <button onClick={getStats}>get elo</button>
-      {/* table here: f_name, l_name, elo, wins, losses */}
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title>Name</DataTable.Title>
-          <DataTable.Title numeric>Elo</DataTable.Title>
-        </DataTable.Header>
-
-        <DataTable.Row>
-          <DataTable.Cell>Test</DataTable.Cell>
-          <DataTable.Cell numeric>1337</DataTable.Cell>
-        </DataTable.Row>
-        
-        <DataTable.Row>
-          <DataTable.Cell>Test2</DataTable.Cell>
-          <DataTable.Cell numeric>420</DataTable.Cell>
-        </DataTable.Row>
-      </DataTable>
+      <LeaderboardComponent leaderboardData={slapperInfo}/>
     </View>
   );
 }
 
 async function getStats() {
-  let values = await api('http://127.0.0.1:5000/get-elo')
-  console.log(values)
+  let values = await getRankingsJson('http://127.0.0.1:5000/get-elo')
+  return values.data;
 }
-
-async function mytest() {
-  console.log("in ping")
-  const myTemp = await api('http://127.0.0.1:5000/ping')
-  console.log(myTemp)
-}
-
-async function api<T>(url: string): Promise<T> {
+async function getRankingsJson(url: string): Promise<LeaderboardData> {
   return fetch(url)
     .then(response => {
       if (!response.ok) {
         throw new Error(response.statusText)
       }
-      return response.json() as Promise<T>
+      return response.json() as Promise<LeaderboardData>
     })
 }
 
