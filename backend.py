@@ -3,17 +3,52 @@
 #pylint: disable=protected-access
 #pylint: disable=no-member
 
-from dataclasses import dataclass
 # import os
+import logging
+import logging.config
 import math
 import sys
 from flask import Flask, request, url_for, redirect, jsonify
 from flask_cors import CORS
-from flask_pydantic import validate
 import psycopg2
 from pydantic import BaseModel
 
-# https://pypi.org/project/Flask-Pydantic/
+logger = logging.getLogger("PingPongPalooza")
+
+logging_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "basic": {
+            "format": "%(levelname)s: %(message)s",
+        },
+        "detailed": {
+            "format": "[%(levelname)s|%(module)s|L%(lineno)d] %(asctime)s: %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S%z"
+        }
+    },
+    "handlers": {
+        "stderr": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "basic",
+            "stream": "ext://sys.stderr"
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "detailed",
+            "filename": "logs/PingPongPalooza.log",
+            "maxBytes": 10000000,
+            "backupCount": 2
+        }
+    },
+    "loggers": {
+        "root": {"level": "DEBUG", "handlers": ["stderr", "file"]}
+    },
+}
+
+logging.config.dictConfig(config=logging_config)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {'origins': "*"}})
@@ -27,10 +62,8 @@ pg_connection_dict = {
 }
 
 # TODO write and test DB interactions
-# TODO solidify DB schema
 # TODO add live scoring feature
 # TODO add timestamp to match add and player creation
-# IDEA go "smash route" and forego security for now
 
 # conn = psycopg2.connect
 # db_cursor = None
@@ -164,23 +197,20 @@ def get_slapper_names():
     return jsonify(names), 200
 
 @app.route('/new-player', methods=['POST'])
-# @validate
 def add_new_player() -> None:
     """Adds new player to data storage"""
-    # TODO add additional fields to DB for player
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
     player_info = request.get_json()
-    # player_info = request.form.to_dict() # potentially isn't sent as form
-    print(player_info)
-    if "" in player_info.values() or player_info == {}:
+    player_info_model =  PlayerPostModel(stage_name=player_info['competitor_name'])
+    if "" == player_info_model.stage_name or player_info == {}:
+        logger.info("Invalid name '%s' submitted", player_info_model.stage_name)
         return jsonify("Missing data"), 400
-    # db_cursor.execute('INSERT INTO players (first_name, last_name) VALUES (%s, %s);',
-    #                   (player_info['first_name'], player_info['last_name']))
     try:
         db_cursor.execute('INSERT INTO players (competitor_name) VALUES (%s);',
                         (player_info['competitor_name'],))
     except psycopg2.errors.UniqueViolation:
+        logger.info("'%s' already exists in database", player_info_model.stage_name)
         return jsonify("Name already exists"), 400
     conn.commit()
     conn.close()
