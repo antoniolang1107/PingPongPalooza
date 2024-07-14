@@ -205,37 +205,31 @@ def add_new_player() -> None:
     player_info_model =  PlayerPostModel(stage_name=player_info['competitor_name'])
     if "" == player_info_model.stage_name or player_info == {}:
         logger.info("Invalid name '%s' submitted", player_info_model.stage_name)
-        return jsonify("Missing data"), 400
+        return jsonify("ERROR: Missing data"), 400
     try:
         db_cursor.execute('INSERT INTO players (competitor_name) VALUES (%s);',
                         (player_info['competitor_name'],))
     except psycopg2.errors.UniqueViolation:
         logger.info("'%s' already exists in database", player_info_model.stage_name)
-        return jsonify("Name already exists"), 400
+        return jsonify("ERROR: Name already exists"), 400
     conn.commit()
     conn.close()
-    return jsonify('okay'), 201
+    return jsonify("Successfully added competitor"), 201
 
 @app.route('/get-elo', methods=['GET'])
 def get_global_elo() -> dict:
     """Gets ELO for all players"""
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    db_cursor.execute('SELECT * from players;')
-    columns = ['competitor_name', 'elo']
-    query_command = f'SELECT {", ".join(columns)} from players;'
-    db_cursor.execute(query_command)
-    # db_cursor.execute('SELECT first_name, last_name, elo from players;')
+    db_cursor.execute("""SELECT row_number() OVER (ORDER BY elo DESC)
+                       sid, competitor_name, elo 
+                      from players
+                      ORDER BY elo DESC;""")
+    columns = ['key', 'competitor_name', 'elo']
     query_result = db_cursor.fetchall()
-    print(query_result)
-    for row in query_result:
-        print("\n-- player --")
-        for index, column in enumerate(columns):
-            print(f"{column}: {row[index]}")
-    # columns.insert(0, "index")
-    # default sort by elo
-    # query_result.sort(lambda "on elo value")
-    descriptive_dict = {'headers': columns, 'data': query_result}
+    named_query = [{columns[0]: row[0], columns[1]: row[1], columns[2]: row[2]
+                    } for row in query_result]
+    descriptive_dict = {'headers': columns, 'data': named_query}
     return jsonify(descriptive_dict), 200
 
 def create_tournament() -> None:
