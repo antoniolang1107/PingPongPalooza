@@ -16,6 +16,9 @@ export default function LeaderboardScreen() {
       setSlapperInfo(data)
     );
   }, [])
+  if (slapperInfo.length === 0) {
+    return <>Loading...</>
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Leaderboard</Text>
