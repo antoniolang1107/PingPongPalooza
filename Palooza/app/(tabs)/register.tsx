@@ -1,31 +1,11 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 
-// class Form extends React.Component {
-//   constructor() {
-//     super();
-//     this.handleSubmit = this.handleSubmit.bind(this);
-//   }
-
-//   handleSubmit(event: any) {
-//     event.preventDefault();
-//     const data = new FormData(event.target);
-
-//     console.log(data.get('email')); // Reference by form input's `name` tag
-
-//     fetch('/api/form-submit-url', {
-//       method: 'POST',
-//       body: data,
-//     });
-//   }
-// }
-
 export default function Register() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register Tab</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <button onClick={mytest}>hello</button>
       {/* <input id='firstName' placeholder='First Name'></input>
       <input id='lastName' placeholder='Last Name'></input> */}
       <input id='pseudonym' placeholder='Competitor Name'></input>
@@ -55,23 +35,8 @@ async function submit() {
       "competitor_name": pseudonym.value,
       // "pin": pin.value
     })
-  });
-}
-
-async function mytest() {
-  console.log("in ping")
-  const myTemp = await api('http://127.0.0.1:5000/ping')
-  console.log(myTemp)
-}
-
-async function api<T>(url: string): Promise<T> {
-  return fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
-      return response.json() as Promise<T>
-    })
+  }).then(response => response.text())
+  .then(data => { console.log(data) });
 }
 
 const styles = StyleSheet.create({
