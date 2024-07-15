@@ -1,15 +1,21 @@
 import { Button, StyleSheet, View, Text, TextInput, Modal, Pressable } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // import { Text, View } from '../../components/Themed';
+import { Dropdown } from 'react-native-element-dropdown';
+import DropdownComponent, { DropdownSchema } from '../../components/DropdownComponent';
+
+interface NamesData {
+  data: Array<DropdownSchema>
+}
 
 // TODO convert input fields into a reuseable component
 function RecordTextField(myValue: string, setValue: React.SetStateAction<string>, placeholderText: string) {
   return (
-  <TextInput
+    <TextInput
     style={styles.input}
     placeholder={placeholderText}
     // onChangeText={myValue => setValue(myValue)}
-  />
+    />
   );
 }
 
@@ -24,17 +30,25 @@ export default function RecordMatch() {
   const [score1, setScore1] = useState("");
   const [score2, setScore2] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [namesList, setNewNames] = useState(Array<DropdownSchema>);
+  useEffect(() => {
+    getNames()
+    .then(data => {
+      setNewNames(data);
+    });
+  }, [])
+  if (namesList.length === 0) {
+    return <>Loading...</>
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Record Match</Text>
       <View style={styles.separator}/>
       {/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
-      {/* IDEA: query for names, populate dropdown */}
       {/* use radio button for win-con value */}
       {/* ensure competitor 1 != competitor 2 */}
       {/* check for valid score */}
-      {/* the dropdown is a non-essential feature; make later */}
       <Modal
         animationType='slide'
         transparent={true}
@@ -44,66 +58,90 @@ export default function RecordMatch() {
         {/* this modal is a filler for submit feeback */}
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Pressable onPress={() => setModalVisible(!modalVisible)}>
-              <Text>Some user feedback!</Text>
-            </Pressable>
+          <Pressable onPress={() => setModalVisible(!modalVisible)}>
+            <Text>Some user feedback!</Text>
+          </Pressable>
           </View>
         </View>
       </Modal>
-      <Button onPress={getNames} title='Get Names'/>
-      <TextInput
-        style={styles.input}
-        placeholder='Competitor 1'
-        onChangeText={(value) => setName1(value)}
-        editable={true}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder='Competitor 2'
-        onChangeText={(value) => setName2(value)}
-        editable={true}
-      />
-      {/* <RecordTextField value={name1} setValue={setName1} placeholderText={"Temp"}/> */}
-      <TextInput
-        style={styles.input}
-        placeholder='Match Score (i.e. 11, 21)'
-        onChangeText={(value) => setWinVal(getNumbers(value))}
-        inputMode='numeric'
-        editable={true}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder='Score 1'
-        onChangeText={(value) => setScore1(getNumbers(value))}
-        inputMode='numeric'
-        editable={true}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder='Score 2'
-        onChangeText={(value) => setScore2(getNumbers(value))}
-        inputMode='numeric'
-        editable={true}
-      />
-      <Button
-        title='Submit Details'
-        onPress={()=>submit(name1, name2, win_val, score1, score2)}
-        accessibilityLabel='Submit entered details'
-      />
-      {/* <button onClick={()=>submit(name1, name2, win_val, score1, score2)}>Submit Details</button> */}
-    </View>
-  );
+      {/* <DropdownComponent
+      data={ namesList }
+      labelField="label"
+      valueField="value"
+      onChange={(item: any) => {
+        console.log(item);
+        // setName1(item.label);
+      }}
+    /> */}
+    <Dropdown
+      data={ namesList }
+      style={styles.dropdown}
+      selectedTextStyle={styles.selectedTextStyle}
+      inputSearchStyle={styles.inputSearchStyle}
+      labelField="label"
+      valueField="value"
+      placeholder="Competitor 1"
+      searchPlaceholder="Search..."
+      onChange={item => {
+        setName1(item.label);
+      }}
+    />
+    <Dropdown
+      data={ namesList }
+      style={styles.dropdown}
+      selectedTextStyle={styles.selectedTextStyle}
+      inputSearchStyle={styles.inputSearchStyle}
+      labelField="label"
+      valueField="value"
+      placeholder="Competitor 2"
+      searchPlaceholder="Search..."
+      onChange={item => {
+        setName1(item.label);
+    }}
+    />
+    {/* <RecordTextField value={name1} setValue={setName1} placeholderText={"Temp"}/> */}
+    <TextInput
+      style={styles.input}
+      placeholder='Match Score (i.e. 11, 21)'
+      onChangeText={(value) => setWinVal(getNumbers(value))}
+      inputMode='numeric'
+      editable={true}
+    />
+    <TextInput
+      style={styles.input}
+      placeholder='Score 1'
+      onChangeText={(value) => setScore1(getNumbers(value))}
+      inputMode='numeric'
+      editable={true}
+    />
+    <TextInput
+      style={styles.input}
+      placeholder='Score 2'
+      onChangeText={(value) => setScore2(getNumbers(value))}
+      inputMode='numeric'
+      editable={true}
+    />
+    <Button
+      title='Submit Details'
+      onPress={()=>submit(name1, name2, win_val, score1, score2)}
+      accessibilityLabel='Submit entered details'
+    />
+    {/* <button onClick={()=>submit(name1, name2, win_val, score1, score2)}>Submit Details</button> */}
+  </View>
+);
 }
 
 async function getNames() {
-  const names = await api('http://127.0.0.1:5000/record-match/get-pseudonyms')
-  console.log(names)
+  const names = await getNamesJson('http://127.0.0.1:5000/record-match/get-pseudonyms')
+  console.log("getNames:", names);
+  return names;
+  // TODO use [(id, name)] instead of [name]
 }
 
 async function submit(competitor_name_1: string, competitor_name_2: string,
   win_val: string, score_1: string, score_2: string) {
-
-  fetch('http://127.0.0.1:5000/update', {
+    
+    fetch('http://127.0.0.1:5000/update', {
     method: 'post',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({
@@ -116,17 +154,33 @@ async function submit(competitor_name_1: string, competitor_name_2: string,
   });
 }
 
-async function api<T>(url: string): Promise<T> {
+async function getNamesJson(url: string): Promise<NamesData> {
   return fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
-      return response.json() as Promise<T>
-    })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(response.statusText)
+    }
+    return response.json() as Promise<NamesData>
+  })
 }
 
 const styles = StyleSheet.create({
+  dropdown: {
+    margin: 16,
+    height: 50,
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.5,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     alignItems: 'center',

@@ -190,11 +190,11 @@ def get_slapper_names():
     """Gets list of competitor pseudonyms"""
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    db_cursor.execute("SELECT competitor_name FROM players;")
+    db_cursor.execute("SELECT id, competitor_name FROM players;")
     names = db_cursor.fetchall()
     conn.close()
-    print(names)
-    return jsonify(names), 200
+    formatted_query = [{"value":name[0], "label": name[1]} for name in names]
+    return jsonify(formatted_query), 200
 
 @app.route('/new-player', methods=['POST'])
 def add_new_player() -> None:
