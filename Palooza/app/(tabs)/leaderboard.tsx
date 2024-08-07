@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import LeaderboardComponent, { LeaderboardSchema }  from '../../components/LeaderboardComponent'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { PlayerContext } from '../../components/DataContext';
 
 interface LeaderboardData {
   header: Array<string>,
@@ -9,21 +10,24 @@ interface LeaderboardData {
 }
 
 export default function LeaderboardScreen() {
-  const [slapperInfo, setSlapperInfo] = useState(Array<LeaderboardSchema>);
-  useEffect(() => {
-    getStats()
-    .then(data =>
-      setSlapperInfo(data)
-    );
-  }, [])
-  if (slapperInfo.length === 0) {
-    return <>Loading...</>
-  }
+  // const [slapperInfo, setSlapperInfo] = useState(Array<LeaderboardSchema>);
+  // useEffect(() => {
+  //   getStats()
+  //   .then(data =>
+  //     setSlapperInfo(data)
+  //   );
+  // }, [])
+  // if (slapperInfo.length === 0) {
+  //   return <>Loading...</>
+  // }
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Leaderboard</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <LeaderboardComponent leaderboardData={slapperInfo}/>
+      {/* <LeaderboardComponent leaderboardData={slapperInfo}/> */}
+        <LeaderboardComponent />
     </View>
   );
 }

@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { DataTable } from 'react-native-paper';
+// import { usePlayerContext } from './DataContext';
+import { PlayerContext } from './DataContext';
 
 export type LeaderboardSchema = {
     key: number,
@@ -8,10 +10,13 @@ export type LeaderboardSchema = {
 };
 
 interface LeaderboardProps {
-    leaderboardData: Array<LeaderboardSchema>,
+    // leaderboardData: Array<LeaderboardSchema>,
 }
 
-const LeaderboardComponent: React.FC<LeaderboardProps> = ({leaderboardData}): React.JSX.Element => {
+const LeaderboardComponent: React.FC<LeaderboardProps> = ({}): React.JSX.Element => {
+    // const playerContext = usePlayerContext();
+    const playerContext = React.useContext(PlayerContext);
+    const leaderboardData = playerContext['playerData'];
     console.log("Leaderboard component", leaderboardData);
     const [page, setPage] = React.useState<number>(0);
     const [numberOfItemsPerPageList] = React.useState([5, 15, 50]);

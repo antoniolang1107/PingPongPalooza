@@ -2,9 +2,10 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
+import PlayerContextProvider, { PlayerContext, usePlayerContext } from '../components/DataContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -40,9 +41,17 @@ export default function RootLayout() {
     return null;
   }
 
+  // const [playerData] = usePlayerContext();
+  // const [playerData, setPlayerData] = usePlayerContext();
+
   return (
     <PaperProvider>
-      <RootLayoutNav />
+      <PlayerContextProvider>
+        <RootLayoutNav />
+      </PlayerContextProvider>
+      {/* <PlayerContext.Provider value={[playerData]}> */}
+      {/* <PlayerContext.Provider value={[playerData, setPlayerData]}> */}
+      {/* </PlayerContext.Provider> */}
     </PaperProvider>
 );
 }

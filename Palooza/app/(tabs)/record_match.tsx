@@ -1,8 +1,11 @@
 import { Button, StyleSheet, View, Text, TextInput, Modal, Pressable } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 // import { Text, View } from '../../components/Themed';
 import { Dropdown } from 'react-native-element-dropdown';
 import DropdownComponent, { DropdownSchema } from '../../components/DropdownComponent';
+import { PlayerContext } from '../../components/DataContext';
+// import { PlayerContext, usePlayerContext } from '../../components/DataContext';
+
 
 interface NamesData {
   data: Array<DropdownSchema>
@@ -37,6 +40,12 @@ export default function RecordMatch() {
       setNewNames(data);
     });
   }, [])
+  const playerContext = useContext(PlayerContext);
+  // const myContextData = usePlayerContext();
+  const myPlayerData = playerContext['playerData'];
+  const myPlayerDataSet = playerContext['setPlayerData'];
+  // const [myContextData, setContext] = usePlayerContext();
+  console.log("Record match context: ", myPlayerData);
   if (namesList.length === 0) {
     return <>Loading...</>
   }
@@ -73,6 +82,7 @@ export default function RecordMatch() {
         // setName1(item.label);
       }}
     /> */}
+    <Button onPress={() => myPlayerDataSet([...myPlayerData, {key: 1, competitor_name: 'the new', elo: 3210}])}>I'm here for testing</Button>
     <Dropdown
       data={ namesList }
       style={styles.dropdown}
