@@ -23,29 +23,7 @@ const LeaderboardComponent: React.FC<LeaderboardProps> = ({}): React.JSX.Element
     const [itemsPerPage, onItemsPerPageChange] = React.useState(
         numberOfItemsPerPageList[0]
     );
-    const [items] = React.useState(leaderboardData);
-    // const [items] = React.useState([
-    //     {
-    //         key: 1,
-    //         competitor_name: 'Cupcake',
-    //         elo: 356,
-    //     },
-    //     {
-    //         key: 2,
-    //         competitor_name: 'Eclair',
-    //         elo: 262,
-    //     },
-    //     {
-    //         key: 3,
-    //         competitor_name: 'Frozen yogurt',
-    //         elo: 159,
-    //     },
-    //     {
-    //         key: 4,
-    //         competitor_name: 'Gingerbread',
-    //         elo: 305,
-    //     },
-    // ]);
+    const items = leaderboardData;
     
     const from = page * itemsPerPage;
     const to = Math.min((page + 1) * itemsPerPage, items.length);

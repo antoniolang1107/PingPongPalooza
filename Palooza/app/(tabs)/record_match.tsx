@@ -84,16 +84,16 @@ export default function RecordMatch() {
     /> */}
     <Button onPress={() => myPlayerDataSet([...myPlayerData, {key: 1, competitor_name: 'the new', elo: 3210}])}>I'm here for testing</Button>
     <Dropdown
-      data={ namesList }
+      data={ myPlayerData }
       style={styles.dropdown}
       selectedTextStyle={styles.selectedTextStyle}
       inputSearchStyle={styles.inputSearchStyle}
-      labelField="label"
-      valueField="value"
+      labelField="competitor_name"
+      valueField="key"
       placeholder="Competitor 1"
       searchPlaceholder="Search..."
       onChange={item => {
-        setName1(item.label);
+        setName1(item.competitor_name);
       }}
     />
     <Dropdown
