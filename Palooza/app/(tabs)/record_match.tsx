@@ -33,20 +33,12 @@ export default function RecordMatch() {
   const [score1, setScore1] = useState("");
   const [score2, setScore2] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [namesList, setNewNames] = useState(Array<DropdownSchema>);
-  useEffect(() => {
-    getNames()
-    .then(data => {
-      setNewNames(data);
-    });
-  }, [])
+
   const playerContext = useContext(PlayerContext);
-  // const myContextData = usePlayerContext();
   const myPlayerData = playerContext['playerData'];
   const myPlayerDataSet = playerContext['setPlayerData'];
-  // const [myContextData, setContext] = usePlayerContext();
   console.log("Record match context: ", myPlayerData);
-  if (namesList.length === 0) {
+  if (myPlayerData.length === 0) {
     return <>Loading...</>
   }
 
@@ -82,7 +74,6 @@ export default function RecordMatch() {
         // setName1(item.label);
       }}
     /> */}
-    <Button onPress={() => myPlayerDataSet([...myPlayerData, {key: 1, competitor_name: 'the new', elo: 3210}])}>I'm here for testing</Button>
     <Dropdown
       data={ myPlayerData }
       style={styles.dropdown}
@@ -97,16 +88,16 @@ export default function RecordMatch() {
       }}
     />
     <Dropdown
-      data={ namesList }
+      data={ myPlayerData }
       style={styles.dropdown}
       selectedTextStyle={styles.selectedTextStyle}
       inputSearchStyle={styles.inputSearchStyle}
-      labelField="label"
-      valueField="value"
+      labelField="competitor_name"
+      valueField="key"
       placeholder="Competitor 2"
       searchPlaceholder="Search..."
       onChange={item => {
-        setName1(item.label);
+        setName1(item.competitor_name);
     }}
     />
     {/* <RecordTextField value={name1} setValue={setName1} placeholderText={"Temp"}/> */}
@@ -141,13 +132,6 @@ export default function RecordMatch() {
 );
 }
 
-async function getNames() {
-  const names = await getNamesJson('http://127.0.0.1:5000/record-match/get-pseudonyms')
-  console.log("getNames:", names);
-  return names;
-  // TODO use [(id, name)] instead of [name]
-}
-
 async function submit(competitor_name_1: string, competitor_name_2: string,
   win_val: string, score_1: string, score_2: string) {
     
@@ -162,16 +146,6 @@ async function submit(competitor_name_1: string, competitor_name_2: string,
       "score_2": score_2,
     })
   });
-}
-
-async function getNamesJson(url: string): Promise<NamesData> {
-  return fetch(url)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(response.statusText)
-    }
-    return response.json() as Promise<NamesData>
-  })
 }
 
 const styles = StyleSheet.create({

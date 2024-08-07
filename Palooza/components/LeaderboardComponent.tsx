@@ -14,17 +14,15 @@ interface LeaderboardProps {
 }
 
 const LeaderboardComponent: React.FC<LeaderboardProps> = ({}): React.JSX.Element => {
-    // const playerContext = usePlayerContext();
     const playerContext = React.useContext(PlayerContext);
     const leaderboardData = playerContext['playerData'];
-    console.log("Leaderboard component", leaderboardData);
     const [page, setPage] = React.useState<number>(0);
     const [numberOfItemsPerPageList] = React.useState([5, 15, 50]);
     const [itemsPerPage, onItemsPerPageChange] = React.useState(
         numberOfItemsPerPageList[0]
     );
     const items = leaderboardData;
-    
+
     const from = page * itemsPerPage;
     const to = Math.min((page + 1) * itemsPerPage, items.length);
     

@@ -10,19 +10,3 @@ const PlayerContextProvider = props => {
 }
 
 export default PlayerContextProvider;
-
-// export const PlayerContext = createContext([{key: 0, competitor_name: "test", elo: 1234}]);
-// export const PlayerContext = createContext<SlapperDetails | undefined>(undefined);
-
-// export function usePlayerContext() {
-//     const [players, setPlayers] = useContext(PlayerContext);
-
-//     if (players === undefined) {
-//         throw new Error('usePlayerContext must be used in parent');
-//     }
-//     console.log("DataContext: ", players);
-//     console.log(setPlayers);
-//     // console.log("Returning:", [players, setPlayers]);
-//     return [players, setPlayers]
-//     // return [players];
-// }

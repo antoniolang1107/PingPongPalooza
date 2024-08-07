@@ -185,15 +185,16 @@ def record_new_singles_match() -> bool:
     conn.close()
     return jsonify("test"), 201
 
-@app.route('/record-match/get-pseudonyms')
+@app.route('/record-match/get-player-data')
 def get_slapper_names():
-    """Gets list of competitor pseudonyms"""
+    """Gets list of competitor data"""
     conn = psycopg2.connect(**pg_connection_dict)
     db_cursor = conn.cursor()
-    db_cursor.execute("SELECT id, competitor_name FROM players;")
-    names = db_cursor.fetchall()
+    db_cursor.execute("SELECT id, competitor_name, elo FROM players;")
+    players = db_cursor.fetchall()
     conn.close()
-    formatted_query = [{"value":name[0], "label": name[1]} for name in names]
+    formatted_query = [{"key":details[0], "competitor_name": details[1], "elo": details[2]
+                        } for details in players]
     return jsonify(formatted_query), 200
 
 @app.route('/new-player', methods=['POST'])
