@@ -1,7 +1,10 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
+import { useContext } from 'react';
+import { PlayerContext } from '../../components/DataContext';
 
 export default function Register() {
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register Tab</Text>
@@ -24,8 +27,13 @@ async function submit() {
   // const firstName = document.getElementById("firstName") as HTMLInputElement;
   // const lastName = document.getElementById("lastName") as HTMLInputElement;
   const pseudonym = document.getElementById("pseudonym") as HTMLInputElement;
+  // const playerContext = useContext(PlayerContext);
+  // const playerData = playerContext['playerData'];
+  // const setPlayerContext = playerContext['setPlayerData'];
+
   // const pin = document.getElementById("pin") as HTMLInputElement;
   // encrypt the pin here
+  let newPlayerData = undefined;
   fetch('http://127.0.0.1:5000/new-player', {
     method: 'post',
     headers: {'Content-Type':'application/json'},
@@ -35,7 +43,16 @@ async function submit() {
       "competitor_name": pseudonym.value,
       // "pin": pin.value
     })
-  }).then(response => response.text())
+  }).then(response => {
+    if (response.ok) {
+      window.location.reload();
+      // let newPlayerData = response.json()
+      // newPlayerData = response.json()
+      // console.log(newPlayerData);
+      // setPlayerContext([...playerData, newPlayerData])
+      // console.log("New Context: ", playerData);
+    }
+    response.text()})
   .then(data => { console.log(data) });
 }
 

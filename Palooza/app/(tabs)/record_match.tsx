@@ -124,7 +124,7 @@ export default function RecordMatch() {
     />
     <Button
       title='Submit Details'
-      onPress={()=>submit(name1, name2, win_val, score1, score2)}
+      onPress={()=>submit(name1, name2, win_val, score1, score2)} // want to use competitor id instead of name
       accessibilityLabel='Submit entered details'
     />
     {/* <button onClick={()=>submit(name1, name2, win_val, score1, score2)}>Submit Details</button> */}
@@ -132,9 +132,30 @@ export default function RecordMatch() {
 );
 }
 
+const validateMatch = (competitor_name_1: string, competitor_name_2: string,
+  win_val: number, score_1: number, score_2: number) => {
+  let valid = true;
+  valid &&= competitor_name_1 !== competitor_name_2; // different competitor
+  console.log("Competitor?: ", valid);
+  valid &&= (score_1 >= win_val || score_2 >= win_val); // valid score
+  console.log("Score?: ", valid);
+  valid &&= (Math.abs(score_1-score_2)>=2) // valid win margin
+  console.log("Margin?: ", valid);
+  return valid
+}
+
 async function submit(competitor_name_1: string, competitor_name_2: string,
   win_val: string, score_1: string, score_2: string) {
     
+    const win_val_num = Number(win_val);
+    const score_1_num = Number(score_1);
+    const score_2_num = Number(score_2);
+
+    if (!validateMatch(competitor_name_1, competitor_name_2, win_val_num , score_1_num , score_2_num)) {
+      console.log("Invalid match!");
+      return;
+    }
+
     fetch('http://127.0.0.1:5000/update', {
     method: 'post',
     headers: {'Content-Type':'application/json'},
@@ -145,6 +166,10 @@ async function submit(competitor_name_1: string, competitor_name_2: string,
       "score_1": score_1,
       "score_2": score_2,
     })
+  }).then(response => {
+    if (response.ok) {
+      window.location.reload();
+    }
   });
 }
 

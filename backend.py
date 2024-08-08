@@ -214,8 +214,11 @@ def add_new_player() -> None:
         logger.info("'%s' already exists in database", player_info_model.stage_name)
         return jsonify("ERROR: Name already exists"), 400
     conn.commit()
+
+    db_cursor.execute('SELECT id, competitor_name, elo FROM players WHERE competitor_name = %s;', (player_info_model.stage_name,))
+    new_player = db_cursor.fetchmany(1)[0]
     conn.close()
-    return jsonify("Successfully added competitor"), 201
+    return jsonify(new_player), 201
 
 @app.route('/get-elo', methods=['GET'])
 def get_global_elo() -> dict:
